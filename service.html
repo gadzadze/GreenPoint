@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenPoint - GT Group</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <header id="main-header">
+        <div class="container header-container">
+            <div class="logo">
+                <div class="logo-text">
+                    <h1><a href="index.html">GreenPoint</a></h1>
+                </div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="#v2v">V2V</a></li>
+                    <li><a href="#maintenance">Maintenance</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <a href="#" class="button secondary" onclick="showLoginModal()">Login</a>
+                <a href="#" class="button primary" onclick="showRegisterModal()">Sign Up</a>
+            </div>
+            <div class="user-menu">
+                <span class="user-name">GT Group</span>
+                <div class="user-dropdown">
+                    <i class="fas fa-user-circle user-avatar"></i>
+                    <div class="dropdown-content">
+                        <a href="#"><i class="fas fa-user"></i> My Profile</a>
+                        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                        <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="bottom-bar">
+        <a href="index.html"><i class="fas fa-home"></i>Home</a>
+        <a href="#find-charger"><i class="fas fa-plug"></i>Find Charger</a>
+        <a href="#v2v"><i class="fas fa-exchange-alt"></i>V2V</a>
+        <a href="#maintenance"><i class="fas fa-tools"></i>Maintenance</a>
+        <a href="#profile" class="active"><i class="fas fa-user"></i>Profile</a>
+    </div>
+
+    <section class="service-center-section">
+        <div class="container">
+            <div class="service-center-header">
+                <div class="service-center-image">
+                    <img src="https://i.ibb.co/QjJNbFrZ/kluch.png" alt="Service">
+                </div>
+                <div class="service-center-info">
+                    <h1>Service</h1>
+                    <div class="contact-info">
+                        <p><i class="fas fa-map-marker-alt"></i> Tbilisi, Georgia</p>
+                        <p><i class="fas fa-phone"></i> +995 32 2XX XXX</p>
+                        <p><i class="fas fa-envelope"></i> <a href="mailto:info@gtmotors.ge">info@service.ge</a></p>
+                        <p><i class="fas fa-clock"></i> Mon-Sat: 9 AM - 6 PM</p>
+                    </div>
+                </div>
+            </div>
+            <div class="service-center-description">
+                <h2>About Service</h2>
+                <p>Service is a premier service center dedicated to providing high-quality maintenance and repair services for electric vehicles. Our skilled technicians use advanced tools to ensure your vehicle performs at its best.</p>
+            </div>
+            <div class="service-center-services">
+                <h2>Our Services</h2>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-details">
+                            <h3>Battery Diagnostic</h3>
+                            <p>Advanced diagnostics to assess and optimize your EV's battery performance.</p>
+                        </div>
+                        <div class="service-meta">
+                            <span class="duration"><i class="fas fa-clock"></i> 60 min | 200 GEL</span>
+                        </div>
+                        <button class="button primary" onclick="openServiceModal('Battery Diagnostic')">Book Now</button>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-details">
+                            <h3>Firmware Update</h3>
+                            <p>Keep your EV's software up-to-date with the latest features.</p>
+                        </div>
+                        <div class="service-meta">
+                            <span class="duration"><i class="fas fa-clock"></i> 30 min | 100 GEL</span>
+                        </div>
+                        <button class="button primary" onclick="openServiceModal('Firmware Update')">Book Now</button>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-details">
+                            <h3>Tire Service</h3>
+                            <p>Professional tire rotation, balancing, and alignment.</p>
+                        </div>
+                        <div class="service-meta">
+                            <span class="duration"><i class="fas fa-clock"></i> 45 min | 150 GEL</span>
+                        </div>
+                        <button class="button primary" onclick="openServiceModal('Tire Service')">Book Now</button>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-details">
+                            <h3>Brake Maintenance</h3>
+                            <p>Comprehensive brake system check and service.</p>
+                        </div>
+                        <div class="service-meta">
+                            <span class="duration"><i class="fas fa-clock"></i> 60 min | 250 GEL</span>
+                        </div>
+                        <button class="button primary" onclick="openServiceModal('Brake Maintenance')">Book Now</button>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-details">
+                            <h3>Charging System Check</h3>
+                            <p>Inspection and maintenance of your EV's charging system.</p>
+                        </div>
+                        <div class="service-meta">
+                            <span class="duration"><i class="fas fa-clock"></i> 30 min | 120 GEL</span>
+                        </div>
+                        <button class="button primary" onclick="openServiceModal('Charging System Check')">Book Now</button>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-details">
+                            <h3>Full Vehicle Inspection</h3>
+                            <p>Complete diagnostic check of all major systems.</p>
+                        </div>
+                        <div class="service-meta">
+                            <span class="duration"><i class="fas fa-clock"></i> 120 min | 400 GEL</span>
+                        </div>
+                        <button class="button primary" onclick="openServiceModal('Full Vehicle Inspection')">Book Now</button>
+                    </div>
+                </div>
+            </div>
+            <div class="service-center-reviews">
+                <h2>Customer Reviews</h2>
+                <div class="reviews-grid">
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer">
+                                <i class="fas fa-user"></i>
+                                <span>Maria S.</span>
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            <p>Outstanding service! My Tesla Model 3 was serviced quickly, and the staff was incredibly professional.</p>
+                        </div>
+                        <div class="review-date">June 1, 2025</div>
+                    </div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer">
+                                <i class="fas fa-user"></i>
+                                <span>David T.</span>
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            <p>The firmware update was done in no time, and the team explained everything clearly.</p>
+                        </div>
+                        <div class="review-date">May 15, 2025</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container footer-container">
+            <div>
+                <h3>GreenPoint</h3>
+                <p>Making EV charging accessible and sustainable through community sharing.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#find-charger">Find Charger</a></li>
+                    <li><a href="#become-host">Become Host</a></li>
+                    <li><a href="#about">About Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">Safety Guidelines</a></li>
+                    <li><a href="#">Support Center</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Host Agreement</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">© 2025 GreenPoint Technologies. All rights reserved.</div>
+    </footer>
+
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('bookingModal')">×</span>
+            <h2 id="serviceModalTitle" class="modal-title">Book Service</h2>
+            <div class="booked-times" id="bookedTimesContainer">
+                <h4>Already Booked Times</h4>
+                <ul id="bookedTimesList"></ul>
+                <p id="noBookedSlotsMessage" style="display: none;">No booked slots for this date.</p>
+            </div>
+            <form id="bookingForm" class="modal-form">
+                <div class="form-group">
+                    <label for="bookingProvider">Service Provider</label>
+                    <select id="bookingProvider" class="form-control" required>
+                        <option value="">Select provider</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="bookingName">Full Name</label>
+                    <input type="text" id="bookingName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookingEmail">Email Address</label>
+                    <input type="email" id="bookingEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookingPhone">Phone Number</label>
+                    <input type="tel" id="bookingPhone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookingEvModel">EV Model</label>
+                    <select id="bookingEvModel" class="form-control" required>
+                        <option value="">Select your EV model</option>
+                        <option value="Tesla Model 3">Tesla Model 3</option>
+                        <option value="Tesla Model S">Tesla Model S</option>
+                        <option value="Tesla Model X">Tesla Model X</option>
+                        <option value="Tesla Model Y">Tesla Model Y</option>
+                        <option value="Other">Other EV Model</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="bookingDate">Date</label>
+                    <input type="date" id="bookingDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookingTime">Time</label>
+                    <select id="bookingTime" class="form-control" required>
+                        <option value="">Select time</option>
+                    </select>
+                </div>
+                <div class="payment-section">
+                    <h4>Payment Information</h4>
+                    <div class="price-display" id="bookingPrice">0 GEL</div>
+                    <div class="form-group">
+                        <label for="bookingPaymentMethod">Payment Method</label>
+                        <select id="bookingPaymentMethod" class="form-control" required>
+                            <option value="card">Credit/Debit Card</option>
+                            <option value="crypto">Crypto Wallet</option>
+                            <option value="greenpoint">GreenPoint Wallet</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="bookingPaymentCard">Card Number</label>
+                        <input type="text" id="bookingPaymentCard" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="bookingCardExpiry">Expiry Date</label>
+                            <input type="text" id="bookingCardExpiry" class="form-control" placeholder="MM/YY" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bookingCardCvc">CVC</label>
+                            <input type="text" id="bookingCardCvc" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="bookingNotes">Special Requests</label>
+                    <textarea id="bookingNotes" class="form-control" rows="3" placeholder="Any special requests or notes"></textarea>
+                </div>
+                <button type="submit" class="button primary">Confirm Booking & Pay</button>
+            </form>
+            <div class="transaction-history" id="transactionHistory">
+                <h3>Transaction History</h3>
+                <ul id="transactionList">
+                    <!-- Transactions will be populated here -->
+                </ul>
+                <button class="button small" onclick="showAllTransactions()">View All</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="booking.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

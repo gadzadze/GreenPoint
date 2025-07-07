@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - GreenPoint</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
+    <style>
+        .option-icon {
+            font-size: 2.5rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container container">
+            <div class="logo">
+                <div class="logo-text">
+                    <h1><a href="index.html">GreenPoint</a></h1>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="register-options">
+            <div class="container">
+                <h2>Create Your Account</h2>
+                <p>Join our network and be part of the EV revolution</p>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="option-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <h3>Driver</h3>
+                        <p>Register as an EV driver to find charging stations, request energy, and book maintenance services.</p>
+                        <a href="#" class="button primary" onclick="showModal('registerModal')">Register as Driver</a>
+                    </div>
+                    <div class="feature-card">
+                        <div class="option-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <h3>Host</h3>
+                        <p>Register as a host to share your charger with other EV owners.</p>
+                        <a href="#" class="button primary" onclick="showModal('hostRegisterModal')">Register as Host</a>
+                    </div>
+                    <div class="feature-card">
+                        <div class="option-icon">
+                            <i class="fas fa-wrench"></i>
+                        </div>
+                        <h3>Service Center</h3>
+                        <p>Register your business to provide EV maintenance and repair services to our community.</p>
+                        <a href="#" class="button primary" onclick="showModal('serviceRegisterModal')">Register as Service</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('registerModal')">&times;</span>
+            <h2 class="modal-title">Register as Driver</h2>
+            <form id="registerForm" class="modal-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="regFirstName">First Name</label>
+                        <input type="text" id="regFirstName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regLastName">Last Name</label>
+                        <input type="text" id="regLastName" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email</label>
+                    <input type="email" id="regEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPhone">Phone Number</label>
+                    <input type="tel" id="regPhone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Password</label>
+                    <input type="password" id="regPassword" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="regConfirmPassword">Confirm Password</label>
+                    <input type="password" id="regConfirmPassword" class="form-control" required>
+                </div>
+                <h3>Your EV Information</h3>
+                <div class="form-group">
+                    <label for="regEvModel">EV Model</label>
+                    <select id="regEvModel" class="form-control" required>
+                        <option value="" disabled selected>Select your EV model</option>
+                        <option value="Tesla Model 3">Tesla Model 3</option>
+                        <option value="Tesla Model S">Tesla Model S</option>
+                        <option value="Tesla Model X">Tesla Model X</option>
+                        <option value="Tesla Model Y">Tesla Model Y</option>
+                        <option value="Audi e-tron">Audi e-tron</option>
+                        <option value="BMW i4">BMW i4</option>
+                        <option value="BMW iX">BMW iX</option>
+                        <option value="Ford Mustang Mach-E">Ford Mustang Mach-E</option>
+                        <option value="Hyundai Ioniq 5">Hyundai Ioniq 5</option>
+                        <option value="Kia EV6">Kia EV6</option>
+                        <option value="Volkswagen ID.4">Volkswagen ID.4</option>
+                        <option value="Rivian R1T">Rivian R1T</option>
+                        <option value="Rivian R1S">Rivian R1S</option>
+                        <option value="Lucid Air">Lucid Air</option>
+                        <option value="Nissan Leaf">Nissan Leaf</option>
+                        <option value="Chevrolet Bolt">Chevrolet Bolt</option>
+                        <option value="Other">Other EV Model</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="regVin">VIN Code</label>
+                        <input type="text" id="regVin" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPlate">Number Plate</label>
+                        <input type="text" id="regPlate" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="role">Register as:</label>
+                    <select id="role" class="form-control" required>
+                        <option value="driver">Driver</option>
+                        <option value="host">Host</option>
+                        <option value="service">Service Center</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" required>
+                        I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                    </label>
+                </div>
+                <button type="submit" class="button primary">Register</button>
+                <p>Already have an account? <a href="#" onclick="showModal('loginModal')">Login</a></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="hostRegisterModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('hostRegisterModal')">&times;</span>
+            <h2 class="modal-title">Register as Host</h2>
+            <form id="hostRegisterForm" class="modal-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="hostFirstName">First Name</label>
+                        <input type="text" id="hostFirstName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="hostLastName">Last Name</label>
+                        <input type="text" id="hostLastName" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="hostEmail">Email</label>
+                    <input type="email" id="hostEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="hostPhone">Phone Number</label>
+                    <input type="tel" id="hostPhone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="hostPassword">Password</label>
+                    <input type="password" id="hostPassword" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="hostConfirmPassword">Confirm Password</label>
+                    <input type="password" id="hostConfirmPassword" class="form-control" required>
+                </div>
+                <h3>Charger Information</h3>
+                <div class="form-group">
+                    <label for="hostChargerType">Charger Type</label>
+                    <select id="hostChargerType" class="form-control" required>
+                        <option value="" disabled selected>Select charger type</option>
+                        <option value="Level 1">Level 1 (120V)</option>
+                        <option value="Level 2">Level 2 (240V)</option>
+                        <option value="DC Fast Charger">DC Fast Charger</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="hostConnectorType">Connector Type</label>
+                    <select id="hostConnectorType" class="form-control" required>
+                        <option value="" disabled selected>Select connector</option>
+                        <option value="J1772">J1772</option>
+                        <option value="CCS">CCS</option>
+                        <option value="CHAdeMO">CHAdeMO</option>
+                        <option value="Tesla">Tesla</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="hostLocation">Charger Location</label>
+                    <input type="text" id="hostLocation" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" required>
+                        I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                    </label>
+                </div>
+                <button type="submit" class="button primary">Register as Host</button>
+                <p>Already have an account? <a href="#" onclick="showModal('loginModal')">Login</a></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="serviceRegisterModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('serviceRegisterModal')">&times;</span>
+            <h2 class="modal-title">Register as Service Center</h2>
+            <form id="serviceRegisterForm" class="modal-form">
+                <div class="form-group">
+                    <label for="serviceBusinessName">Business Name</label>
+                    <input type="text" id="serviceBusinessName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="serviceEmail">Contact Email</label>
+                    <input type="email" id="serviceEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="servicePhone">Contact Phone</label>
+                    <input type="tel" id="servicePhone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="serviceAddress">Business Address</label>
+                    <input type="text" id="serviceAddress" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="servicePassword">Password</label>
+                    <input type="password" id="servicePassword" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="serviceConfirmPassword">Confirm Password</label>
+                    <input type="password" id="serviceConfirmPassword" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="serviceDescription">Business Description</label>
+                    <textarea id="serviceDescription" class="form-control" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" required>
+                        I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                    </label>
+                </div>
+                <button type="submit" class="button primary">Register as Service Center</button>
+                <p>Already have an account? <a href="#" onclick="showModal('loginModal')">Login</a></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('loginModal')">&times;</span>
+            <h2 class="modal-title">Login to Your Account</h2>
+            <form id="loginForm" class="modal-form">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="rememberMe">
+                        Remember me
+                    </label>
+                    <a href="#" onclick="showModal('forgotPasswordModal')">Forgot password?</a>
+                </div>
+                <button type="submit" class="button primary">Login</button>
+                <p>Don't have an account? <a href="#" onclick="showModal('registerModal')">Register</a></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="forgotPasswordModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('forgotPasswordModal')">&times;</span>
+            <h2 class="modal-title">Reset Your Password</h2>
+            <form id="forgotPasswordForm" class="modal-form">
+                <div class="form-group">
+                    <label for="resetEmail">Email Address</label>
+                    <input type="email" id="resetEmail" class="form-control" required>
+                </div>
+                <button type="submit" class="button primary">Send Reset Link</button>
+                <p>Remember your password? <a href="#" onclick="showModal('loginModal')">Login</a></p>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container footer-container">
+            <div class="footer-links">
+                <h3>GreenPoint</h3>
+                <p>Making EV charging accessible and sustainable through community sharing.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">Find Charger</a></li>
+                    <li><a href="#">Become Host</a></li>
+                    <li><a href="#">About Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">Safety Guidelines</a></li>
+                    <li><a href="#">Support Center</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Host Agreement</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>© 2025 GreenPoint Technologies. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+<!-- Custom Message Box Modal (replaces alert()) -->
+<div class="modal" id="messageBox">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal('messageBox')">&times;</span>
+        <div style="text-align: center; padding: 20px;">
+            <i id="messageBoxIcon" class="message-icon"></i>
+            <p id="messageBoxText" style="font-size: 1.1rem; margin-top: 15px;"></p>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Add this CSS to your style.css file or within a <style> tag in index.html */
+    #messageBox .modal-content {
+        max-width: 350px;
+        padding: 30px;
+        border-radius: 10px;
+        text-align: center;
+    }
+    #messageBox .message-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+    }
+    #messageBox.success .message-icon {
+        color: var(--accent); /* Green for success */
+    }
+    #messageBox.error .message-icon {
+        color: #e74c3c; /* Red for error */
+    }
+    #messageBox.success .modal-content {
+        border: 2px solid var(--accent);
+    }
+    #messageBox.error .modal-content {
+        border: 2px solid #e74c3c;
+    }
+    #messageBox .close-modal {
+        top: 10px;
+        right: 10px;
+        font-size: 1.5rem;
+    }
+</style>
+
+
+
+    <script src="auth.js"></script>
+    -<script>
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var role = document.getElementById('role').value;
+        if (role === 'admin') {
+            window.location.href = 'admin_panel.html';
+        } else if (role === 'driver') {
+            window.location.href = 'driver-panel.html';
+        } else if (role === 'host') {
+            window.location.href = 'host_panel.html';
+        } else if (role === 'service') {
+            window.location.href = 'admin_panel.html';
+        } else {
+            window.location.href = 'index.html';
+        }
+    });
+    </script>
+</body>
+</html>

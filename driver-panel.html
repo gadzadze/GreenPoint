@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenPoint Driver Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzxH1pfMdfH8EGdC9HbhApySmi=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjGwZZgireuU3rdvN8T8NBtC8ogp4o=" crossorigin=""></script>
+
+    <style>
+        /* CSS Variables - ensure consistency with style.css */
+        :root {
+            --primary-dark: #1e3b3b; /* Dark green */
+            --primary-medium: #2f4f4f; /* Medium green */
+            --primary-light: #98bfbf; /* Light green */
+            --accent-color: #f4a261; /* Orange/Gold accent */
+            --text-dark: #333;
+            --text-light: #f5f5f5;
+            --bg-light: #f5f5f5;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+            position: fixed;
+            padding-top: 20px;
+            transition: all 0.3s ease;
+            z-index: 1001;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar a {
+            padding: 15px 20px;
+            text-decoration: none;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            transition: background-color 0.3s, border-left 0.3s;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar a i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .sidebar a.active {
+            background-color: var(--primary-medium);
+            border-left-color: var(--accent-color); /* Highlight active with accent */
+        }
+
+        .sidebar a:hover {
+            background-color: var(--primary-medium);
+            border-left-color: var(--primary-light);
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+            transition: margin-left 0.3s ease, width 0.3s ease;
+            flex-grow: 1;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border-radius: 8px; /* Rounded corners for header */
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--primary-dark);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            position: relative; /* For dropdown */
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid var(--accent-color); /* Profile picture border */
+        }
+
+        .user-profile span {
+            font-weight: 500;
+            color: var(--primary-dark);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .card i {
+            font-size: 36px; /* Larger icons for cards */
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+        }
+
+        .card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+            color: var(--primary-medium);
+        }
+
+        .card p {
+            margin: 0;
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        /* General page styling */
+        .page {
+            background-color: var(--card-bg); /* Pages also get card-like styling */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-top: 20px; /* Space from header */
+        }
+
+        .page h2 {
+            color: var(--primary-dark);
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        /* Form Styling */
+        .form-container {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--primary-dark);
+        }
+
+        .form-container input[type="text"],
+        .form-container input[type="email"],
+        .form-container input[type="password"],
+        .form-container input[type="number"],
+        .form-container input[type="tel"],
+        .form-container input[type="date"],
+        .form-container input[type="time"],
+        .form-container select,
+        .form-container textarea {
+            width: calc(100% - 22px); /* Adjust for padding and border */
+            padding: 11px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+            font-size: 1em;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background-color: var(--bg-light); /* Light background for input fields */
+            color: var(--text-dark);
+        }
+
+        .form-container input[type="text"]:focus,
+        .form-container input[type="email"]:focus,
+        .form-container input[type="password"]:focus,
+        .form-container input[type="number"]:focus,
+        .form-container input[type="tel"]:focus,
+        .form-container input[type="date"]:focus,
+        .form-container input[type="time"]:focus,
+        .form-container select:focus,
+        .form-container textarea:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(244, 162, 97, 0.2); /* Accent color glow */
+            outline: none;
+        }
+
+        button {
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: var(--primary-medium);
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+
+        .button-secondary {
+            background-color: #6c757d; /* Grey/secondary color */
+            margin-left: 10px;
+        }
+        .button-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        /* Table Styling */
+        .table-container {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-top: 20px;
+            overflow-x: auto; /* For responsive tables */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap; /* Prevent content from wrapping unless necessary */
+        }
+
+        th {
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+
+        tr:hover {
+            background-color: var(--bg-light);
+        }
+
+        .status-pending { background-color: #ffeb3b; padding: 5px 10px; border-radius: 12px; display: inline-block; font-size: 0.85em; color: #333; }
+        .status-completed { background-color: #d4edda; color: #155724; padding: 5px 10px; border-radius: 12px; display: inline-block; font-size: 0.85em; }
+        .status-cancelled { background-color: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 12px; display: inline-block; font-size: 0.85em; }
+        .status-available { background-color: #d4edda; color: #155724; padding: 5px 10px; border-radius: 12px; display: inline-block; font-size: 0.85em; }
+        .status-occupied { background-color: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 12px; display: inline-block; font-size: 0.85em; }
+        .status-offline { background-color: #e2e3e5; color: #6c757d; padding: 5px 10px; border-radius: 12px; display: inline-block; font-size: 0.85em; }
+
+        .search-bar {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+            background-color: var(--bg-light);
+        }
+
+        .tabs {
+            margin-bottom: 15px;
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border: none;
+            background-color: var(--bg-light);
+            cursor: pointer;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            transition: background-color 0.3s, color 0.3s;
+            font-weight: 500;
+            color: var(--primary-dark);
+        }
+
+        .tab.active {
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+        }
+
+        .tab:hover:not(.active) {
+            background-color: #e0e0e0;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50; /* Green */
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: none;
+            z-index: 10000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-size: 1em;
+            opacity: 0.95;
+        }
+        
+        #map {
+            height: 400px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: var(--primary-dark);
+            text-decoration: none;
+        }
+
+        .modal h3 {
+            margin-top: 0;
+            color: var(--primary-dark);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .modal-buttons {
+            text-align: right;
+            margin-top: 20px;
+        }
+        .modal-buttons button {
+            margin-left: 10px;
+        }
+
+        /* Profile Dropdown */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: var(--card-bg);
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            right: 0;
+            top: 55px; /* Adjust based on header height */
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .dropdown-content a {
+            color: var(--text-dark);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-content a:hover {
+            background-color: var(--bg-light);
+        }
+
+        .user-profile.active .dropdown-content {
+            display: block;
+        }
+
+        /* GreenPoints specific styles */
+        .greenpoints-card-dashboard {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            grid-column: span 1; /* Ensure it takes one column in the grid */
+        }
+        .greenpoints-card-dashboard i {
+            font-size: 1.5em;
+            margin-right: 10px;
+            color: white; /* Icon also white */
+        }
+
+        .greenpoints-main-card {
+            background-color: var(--primary-dark); /* Dark background for main points display */
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .greenpoints-main-card h3 {
+            margin-top: 0;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            color: white;
+            border-bottom: 1px solid rgba(255,255,255,0.2); /* Lighter border for contrast */
+            padding-bottom: 10px;
+        }
+        .greenpoints-main-card p {
+            font-size: 3.5em;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-color); /* Accent for the points number */
+        }
+        .greenpoints-main-card p i {
+            font-size: 1em; /* Adjust icon size relative to text */
+            margin-right: 15px;
+            color: var(--accent-color);
+        }
+
+        .greenpoints-section-title {
+            color: var(--primary-dark);
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .greenpoints-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .greenpoints-actions-grid button {
+            background-color: var(--primary-medium);
+            padding: 15px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .greenpoints-actions-grid button:hover {
+            background-color: #3d7d70;
+        }
+
+        .greenpoints-history table {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .greenpoints-history th {
+            background-color: var(--primary-dark);
+            color: white;
+        }
+        .greenpoints-history .points-earned {
+            color: #4CAF50; /* Green for earned points */
+            font-weight: bold;
+        }
+        .greenpoints-history .points-spent {
+            color: #D32F2F; /* Red for spent points */
+            font-weight: bold;
+        }
+        .greenpoints-history .points-bonus {
+            color: #1976D2; /* Blue for bonus points */
+            font-weight: bold;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+            .greenpoints-actions-grid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-250px);
+                width: 220px;
+                box-shadow: none; /* Hide shadow when collapsed */
+            }
+            .sidebar.active {
+                transform: translateX(0);
+                box-shadow: 2px 0 5px rgba(0,0,0,0.2); /* Show shadow when active */
+            }
+            .content {
+                margin-left: 0;
+                width: 100%;
+                padding: 15px;
+            }
+            .header {
+                padding: 10px 15px;
+                border-radius: 0; /* No rounded corners on small screens for full width */
+            }
+            .header h2 {
+                font-size: 20px;
+            }
+            .menu-toggle {
+                display: block; /* Show menu toggle button */
+                margin-right: 15px;
+                background: none;
+                border: none;
+                color: var(--primary-dark);
+                font-size: 24px;
+                cursor: pointer;
+            }
+            .header .user-profile {
+                display: none; /* Hide user profile on small screens */
+            }
+            .card {
+                padding: 15px;
+            }
+            .card i {
+                font-size: 30px;
+                margin-bottom: 10px;
+            }
+            .card p {
+                font-size: 1.8em;
+            }
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+            .greenpoints-main-card {
+                padding: 20px;
+            }
+            .greenpoints-main-card p {
+                font-size: 2.8em;
+            }
+            .greenpoints-main-card p i {
+                font-size: 0.9em;
+            }
+            .greenpoints-actions-grid {
+                grid-template-columns: 1fr; /* Single column on very small screens */
+            }
+        }
+
+        /* Menu toggle button (initially hidden on large screens) */
+        .menu-toggle {
+            display: none;
+        }
+
+        /* Ensure sidebar is not hidden on larger screens by default */
+        @media (min-width: 769px) {
+            .sidebar {
+                transform: translateX(0);
+            }
+            .content {
+                margin-left: 250px;
+            }
+        }
+
+        /* Utility for Leaflet map display */
+        #map {
+            width: 100%;
+            height: 400px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        /* Additional styles for service partners list */
+        .service-partner-item {
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-light);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .service-partner-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .service-partner-item img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 15px;
+            object-fit: cover;
+            border: 2px solid var(--primary-light);
+        }
+        .service-partner-details {
+            flex-grow: 1;
+        }
+        .service-partner-details h4 {
+            margin: 0 0 5px 0;
+            color: var(--primary-dark);
+            font-size: 1.1em;
+        }
+        .service-partner-details p {
+            margin: 0;
+            font-size: 0.9em;
+            color: #555;
+        }
+        .service-partner-actions button {
+            padding: 8px 15px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <a href="#" class="active" onclick="showPage('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="#" onclick="showPage('find-chargers')"><i class="fas fa-charging-station"></i> Find Chargers</a>
+        <a href="#" onclick="showPage('my-bookings')"><i class="fas fa-calendar-check"></i> My Bookings</a>
+        <a href="#" onclick="showPage('my-vehicles')"><i class="fas fa-car-battery"></i> My Vehicles</a>
+        <a href="#" onclick="showPage('energy-sharing')"><i class="fas fa-share-alt"></i> Energy Sharing</a>
+        <a href="#" onclick="showPage('book-services')"><i class="fas fa-tools"></i> Book Services</a>
+        <a href="#" onclick="showPage('greenpoints')"><i class="fas fa-coins"></i> GreenPoints</a> <a href="#" onclick="showPage('profile')"><i class="fas fa-user-circle"></i> Profile</a>
+        <a href="#" onclick="auth.logout()" style="margin-top: auto; padding-bottom: 20px;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <div class="content" id="content">
+        <div class="header">
+            <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+            <h2 id="page-title">Dashboard</h2>
+            <div class="user-profile" onclick="driver.toggleProfileDropdown()">
+                <img id="profilePhoto" src="https://via.placeholder.com/40" alt="User Profile">
+                <span id="userDisplayName">Driver Name</span>
+                <div class="dropdown-content" id="profileDropdown">
+                    <a href="#" onclick="showPage('profile'); driver.toggleProfileDropdown();">My Profile</a>
+                    <a href="#" onclick="auth.logout();">Logout</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboard" class="page">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <i class="fas fa-charging-station"></i>
+                    <h3>Total Charges</h3>
+                    <p id="totalCharges">0</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-dollar-sign"></i>
+                    <h3>Total Spent</h3>
+                    <p id="totalSpent">$0.00</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-car-battery"></i>
+                    <h3>Avg. Efficiency</h3>
+                    <p id="avgEfficiency">0 kWh/mile</p>
+                </div>
+                <div class="greenpoints-card-dashboard card" onclick="showPage('greenpoints')">
+                    <i class="fas fa-coins"></i>
+                    <h3>GreenPoints</h3>
+                    <p id="dashboardGreenPoints">0</p>
+                </div>
+                </div>
+
+            <div class="table-container">
+                <h2>Recent Charging Sessions</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Station</th>
+                            <th>Date</th>
+                            <th>kWh Charged</th>
+                            <th>Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentChargesTableBody">
+                        </tbody>
+                </table>
+            </div>
+
+            <div class="table-container">
+                <h2>Upcoming Bookings</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Service Type</th>
+                            <th>Provider</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="upcomingBookingsTableBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="find-chargers" class="page" style="display:none;">
+            <h2>Find Charging Stations</h2>
+            <div id="map"></div>
+            <div class="table-container">
+                <input type="text" class="search-bar" placeholder="Filter chargers by type, availability..." id="chargerSearch" onkeyup="driver.filterChargers()">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Station Name</th>
+                            <th>Location</th>
+                            <th>Type</th>
+                            <th>Price/kWh</th>
+                            <th>Power (kW)</th>
+                            <th>Availability</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="chargersTableBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="my-bookings" class="page" style="display:none;">
+            <h2>My Charging & Service Bookings</h2>
+            <div class="tabs">
+                <button class="tab active" onclick="driver.filterMyBookings('all')">All</button>
+                <button class="tab" onclick="driver.filterMyBookings('upcoming')">Upcoming</button>
+                <button class="tab" onclick="driver.filterMyBookings('completed')">Completed</button>
+                <button class="tab" onclick="driver.filterMyBookings('cancelled')">Cancelled</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Type</th>
+                            <th>Item/Service</th>
+                            <th>Date/Time</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="myBookingsTableBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="my-vehicles" class="page" style="display:none;">
+            <h2>My Electric Vehicles</h2>
+            <button class="add-button" onclick="driver.showAddVehicleForm()">Add New Vehicle</button>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Make</th>
+                            <th>Model</th>
+                            <th>Year</th>
+                            <th>Battery (kWh)</th>
+                            <th>Plate No.</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="myVehiclesTableBody">
+                        </tbody>
+                </table>
+            </div>
+
+            <div id="addVehicleModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-button" onclick="closeModal('addVehicleModal')">&times;</span>
+                    <h3>Add New Vehicle</h3>
+                    <form id="vehicleForm">
+                        <div class="form-group"><label for="vehicleMake">Make</label><input type="text" id="vehicleMake" required></div>
+                        <div class="form-group"><label for="vehicleModel">Model</label><input type="text" id="vehicleModel" required></div>
+                        <div class="form-group"><label for="vehicleYear">Year</label><input type="number" id="vehicleYear" min="1990" max="2030" required></div>
+                        <div class="form-group"><label for="vehicleBattery">Battery Capacity (kWh)</label><input type="number" id="vehicleBattery" min="10" step="1" required></div>
+                        <div class="form-group"><label for="vehiclePlate">License Plate No.</label><input type="text" id="vehiclePlate" required></div>
+                        <div class="modal-buttons">
+                            <button type="submit">Save Vehicle</button>
+                            <button type="button" class="button-secondary" onclick="closeModal('addVehicleModal')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="energy-sharing" class="page" style="display:none;">
+            <h2>Energy Sharing</h2>
+            <p>Share your vehicle's unused battery capacity with other drivers in need, or request energy from nearby vehicles.</p>
+            <div class="tabs">
+                <button class="tab active" onclick="driver.filterEnergyRequests('all')">All Requests</button>
+                <button class="tab" onclick="driver.filterEnergyRequests('my-offers')">My Offers</button>
+                <button class="tab" onclick="driver.filterEnergyRequests('my-requests')">My Requests</button>
+            </div>
+
+            <button class="add-button" onclick="driver.showEnergyRequestModal()">Offer/Request Energy</button>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Vehicle</th>
+                            <th>Amount (kWh)</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Expires</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="energyRequestsTableBody">
+                        </tbody>
+                </table>
+            </div>
+
+            <div id="energyRequestModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-button" onclick="closeModal('energyRequestModal')">&times;</span>
+                    <h3>Offer or Request Energy</h3>
+                    <form id="energyRequestForm">
+                        <div class="form-group">
+                            <label for="requestType">Type</label>
+                            <select id="requestType" required>
+                                <option value="offer">Offer Energy</option>
+                                <option value="request">Request Energy</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label for="requestVehicle">Your Vehicle</label><select id="requestVehicle" required></select></div>
+                        <div class="form-group"><label for="requestAmount">Amount (kWh)</label><input type="number" id="requestAmount" min="1" step="1" required></div>
+                        <div class="form-group"><label for="requestLocation">Current Location (lat, long)</label><input type="text" id="requestLocation" placeholder="e.g., 41.7151, 44.7925" required></div>
+                        <div class="form-group"><label for="requestExpires">Expires On</label><input type="date" id="requestExpires" required></div>
+                        <div class="modal-buttons">
+                            <button type="submit">Submit Request</button>
+                            <button type="button" class="button-secondary" onclick="closeModal('energyRequestModal')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="book-services" class="page" style="display:none;">
+            <h2>Book Vehicle Services</h2>
+            <p>Find and book maintenance or other services from partner mechanics and service centers.</p>
+            <div class="table-container">
+                <input type="text" class="search-bar" placeholder="Search services or partners..." id="serviceSearch" onkeyup="driver.filterServicePartners()">
+                <div id="servicePartnersList">
+                    </div>
+            </div>
+
+            <div id="bookServiceModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-button" onclick="closeModal('bookServiceModal')">&times;</span>
+                    <h3 id="bookServiceModalTitle">Book Service</h3>
+                    <form id="serviceBookingForm">
+                        <div class="form-group"><label for="servicePartnerName">Service Partner</label><input type="text" id="servicePartnerName" readonly></div>
+                        <div class="form-group"><label for="serviceVehicle">Your Vehicle</label><select id="serviceVehicle" required></select></div>
+                        <div class="form-group"><label for="selectedService">Select Service</label><select id="selectedService" required></select></div>
+                        <div class="form-group"><label for="serviceDate">Preferred Date</label><input type="date" id="serviceDate" required></div>
+                        <div class="form-group"><label for="serviceTime">Preferred Time</label><input type="time" id="serviceTime" required></div>
+                        <div class="form-group"><label for="serviceNotes">Notes (optional)</label><textarea id="serviceNotes" rows="3"></textarea></div>
+                        <div class="modal-buttons">
+                            <button type="submit">Book Service</button>
+                            <button type="button" class="button-secondary" onclick="closeModal('bookServiceModal')">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="greenpoints" class="page" style="display:none;">
+            <div class="greenpoints-main-card">
+                <h3>Your GreenPoints Balance</h3>
+                <p><i class="fas fa-coins"></i> <span id="currentGreenPoints">0</span></p>
+            </div>
+
+            <h3 class="greenpoints-section-title">Earn GreenPoints</h3>
+            <div class="greenpoints-actions-grid">
+                <button onclick="driver.earnChargingPoints(100, 50)">Earn 100 Points (50 kWh Charged)</button>
+                <button onclick="driver.earnServiceVisitPoints(150, 'Car Wash Visit')">Earn 150 Points (Service Visit)</button>
+                <button onclick="driver.earnReferralPoints(500)">Earn 500 Points (Refer New Driver)</button>
+                <button onclick="driver.earnBookingPoints(20)">Earn 20 Points (Platform Booking)</button>
+            </div>
+
+            <h3 class="greenpoints-section-title">Redeem GreenPoints</h3>
+            <div class="greenpoints-actions-grid">
+                <button onclick="driver.redeemChargingDiscount(100)">Redeem 100 Points (Charging Discount)</button>
+                <button onclick="driver.redeemServicePartnerVoucher(200)">Redeem 200 Points (Service Voucher)</button>
+                <button onclick="driver.exchangeForVoucher(300)">Exchange 300 Points (Platform Voucher)</button>
+            </div>
+            
+            <h3 class="greenpoints-section-title">GreenPoints Transaction History</h3>
+            <div class="table-container greenpoints-history">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Points</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="greenPointsHistoryTableBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="profile" class="page" style="display:none;">
+            <h2>My Profile</h2>
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="profilePhotoInput">Profile Photo</label>
+                    <input type="file" id="profilePhotoInput" accept="image/*" style="display: none;">
+                    <button onclick="document.getElementById('profilePhotoInput').click()">Upload New Photo</button>
+                    <div style="margin-top: 15px; text-align: center;">
+                        <img id="profilePhotoPreview" src="https://via.placeholder.com/100" alt="Profile Photo" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-color);">
+                    </div>
+                </div>
+                <div class="form-group"><label for="profileName">Name</label><input type="text" id="profileName" value="John Doe"></div>
+                <div class="form-group"><label for="profileEmail">Email</label><input type="email" id="profileEmail" value="john.doe@example.com"></div>
+                <div class="form-group"><label for="profilePhone">Phone</label><input type="tel" id="profilePhone" value="+1 (555) 123-4567"></div>
+                <div class="form-group">
+                    <label for="profileAddress">Address</label>
+                    <textarea id="profileAddress" rows="3">123 Green Charging Lane, EV City, CA 90210</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="membershipTier">Membership Tier</label>
+                    <input type="text" id="membershipTier" value="Gold" readonly>
+                </div>
+                <button onclick="driver.saveProfile()">Save Profile</button>
+            </div>
+        </div>
+
+        <div id="bookingConfirmationModal" class="modal">
+            <div class="modal-content">
+                <span class="close-button" onclick="closeModal('bookingConfirmationModal')">&times;</span>
+                <h3>Booking Confirmed!</h3>
+                <p id="bookingConfirmationMessage"></p>
+                <div class="modal-buttons">
+                    <button onclick="closeModal('bookingConfirmationModal')">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="notification" id="notification">Action completed!</div>
+    </div>
+
+    <script>
+        // Common functions that would typically be in a global `main.js` or directly in HTML for simplicity
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            // Optional: Reset form within the modal if it exists
+            const form = document.querySelector(`#${modalId} form`);
+            if (form) {
+                form.reset();
+            }
+        }
+
+        function sendEmail(to, subject, body) {
+            console.log(`Sending email to: ${to}`);
+            console.log(`Subject: ${subject}`);
+            console.log(`Body: ${body}`);
+            // In a real application, this would be an AJAX call to a backend email service
+            driver.showNotification('Email sent (simulated)!');
+        }
+
+        // Dummy authentication object for local testing purposes
+        const auth = {
+            tokenKey: 'greenpoint_driver_auth_token',
+            roleKey: 'greenpoint_user_role',
+            user: {
+                id: 'driver123',
+                displayName: 'EV Driver John',
+                email: 'john.doe@example.com',
+                photoUrl: 'https://via.placeholder.com/40',
+                address: '123 Green Charging Lane, EV City, CA 90210',
+                phone: '+1 (555) 123-4567',
+                membershipTier: 'Gold'
+            },
+            logout: function() {
+                localStorage.removeItem(this.tokenKey);
+                localStorage.removeItem(this.roleKey);
+                localStorage.removeItem('greenpoint_driver_data'); // Clear driver data
+                localStorage.removeItem('greenpoint_loyalty_data_driver'); // Clear loyalty data
+                alert('Logged out. Redirecting to login page.');
+                window.location.href = 'index.html'; // Redirect to your login page
+            }
+        };
+
+        // Global showPage function (now defined here for simplicity)
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.style.display = 'none');
+            document.getElementById(pageId).style.display = 'block';
+
+            document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+            document.querySelector(`.sidebar a[onclick="showPage('${pageId}')"]`).classList.add('active');
+            
+            document.getElementById('page-title').textContent = pageId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
+            // Hide sidebar on smaller screens when navigating
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('active');
+                document.getElementById('content').style.marginLeft = '0';
+            }
+
+            // Trigger specific page initializations/data renders
+            if (window.driver) { // Ensure driver object is loaded
+                if (pageId === 'dashboard') {
+                    window.driver.updateDashboardMetrics();
+                } else if (pageId === 'find-chargers') {
+                    window.driver.initMap();
+                    window.driver.renderChargersTable();
+                } else if (pageId === 'my-bookings') {
+                    window.driver.filterMyBookings('all');
+                } else if (pageId === 'my-vehicles') {
+                    window.driver.renderMyVehiclesTable();
+                } else if (pageId === 'energy-sharing') {
+                    window.driver.renderEnergyRequestsTable();
+                    window.driver.populateEnergyRequestVehicles();
+                } else if (pageId === 'book-services') {
+                    window.driver.updateServiceBookingOptions();
+                    window.driver.renderServicePartners();
+                } else if (pageId === 'profile') {
+                    window.driver.loadProfile();
+                } else if (pageId === 'greenpoints') { // NEW: GreenPoints page initialization
+                    window.driver.updateGreenPointsUI();
+                }
+            } else {
+                console.warn('Driver object not yet loaded, cannot perform page specific initializations.');
+            }
+        }
+        window.showPage = showPage; // Expose showPage globally
+
+        // Sidebar toggle for mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+            sidebar.classList.toggle('active');
+            if (sidebar.classList.contains('active')) {
+                content.style.marginLeft = window.innerWidth <= 768 ? '220px' : '250px';
+            } else {
+                content.style.marginLeft = '0';
+            }
+        }
+        window.toggleSidebar = toggleSidebar; // Expose globally
+    </script>
+    <script src="driver_panel.js"></script>
+</body>
+</html>

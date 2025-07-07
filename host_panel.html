@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charger Host Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; color: #333; display: flex; }
+        .sidebar { width: 250px; height: 100vh; background-color: #2e5a50; color: white; position: fixed; padding-top: 20px; transition: all 0.3s; z-index: 1001; }
+        .sidebar a { padding: 15px 20px; text-decoration: none; color: white; display: flex; align-items: center; font-size: 16px; transition: all 0.3s; }
+        .sidebar a i { margin-right: 10px; }
+        .sidebar a.active { background-color: #1a3c34; border-left: 4px solid #fff; }
+        .sidebar a:hover { background-color: #1a3c34; }
+        .content { margin-left: 250px; padding: 20px; width: calc(100% - 250px); transition: margin-left 0.3s, width 0.3s; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: #fff; border-bottom: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header h2 { margin: 0; font-size: 24px; }
+        .user-profile { display: flex; align-items: center; }
+        .user-profile img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 20px; }
+        .card { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;}
+        .card:hover { transform: translateY(-5px); box-shadow: 0 6px 10px rgba(0,0,0,0.15); }
+        .card i { font-size: 24px; margin-bottom: 10px; color: #2e5a50; }
+        .chart-container, .table-container, .form-container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 20px; }
+        canvas { max-height: 300px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: #f0f0f0; font-weight: 500; color: #555; }
+        tr:hover { background-color: #f9f9f9; }
+
+        .status-Online { background-color: #d4edda; color: #155724; padding: 5px 10px; border-radius: 12px; display: inline-block; font-size: 0.85em; }
+        .status-Offline { background-color: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 12px; display: inline-block; font-size: 0.85em; }
+        .status-Charging { background-color: #ffeeba; color: #856404; padding: 5px 10px; border-radius: 12px; display: inline-block; font-size: 0.85em; }
+        .status-Maintenance { background-color: #cce5ff; color: #004085; padding: 5px 10px; border-radius: 12px; display: inline-block; font-size: 0.85em; }
+
+        .booking-status-Pending { background-color: #ffeb3b; padding: 5px 10px; border-radius: 12px; display: inline-block; font-size: 0.85em; color: #333; }
+        .booking-status-Completed { background-color: #d4edda; color: #155724; padding: 5px 10px; border-radius: 12px; display: inline-block; font-size: 0.85em; }
+        .booking-status-Cancelled { background-color: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 12px; display: inline-block; font-size: 0.85em; }
+        
+        .predictive-insights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }
+        .insight-card { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+        
+        button { background-color: #2e5a50; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: background-color 0.3s, transform 0.2s; font-weight: 500; }
+        button:hover { background-color: #1a3c34; transform: translateY(-1px); }
+        button:active { transform: translateY(0); }
+        
+        .add-button { float: right; margin-bottom: 15px; }
+        .add-button:hover { background-color: #1a3c34; }
+        
+        .search-bar { padding: 10px; width: calc(100% - 22px); margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .tabs { margin-bottom: 15px; display: flex; border-bottom: 2px solid #eee; }
+        .tab { padding: 10px 20px; border: none; background-color: #f5f5f5; cursor: pointer; margin-right: 5px; border-radius: 5px 5px 0 0; transition: background-color 0.3s, color 0.3s; }
+        .tab.active { background-color: #2e5a50; color: white; }
+        .tab:hover:not(.active) { background-color: #e0e0e0; }
+
+        .notification { position: fixed; top: 20px; right: 20px; background-color: #4caf50; color: white; padding: 10px 20px; border-radius: 5px; display: none; z-index: 10000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        
+        .form-container input[type="text"],
+        .form-container input[type="number"],
+        .form-container input[type="email"],
+        .form-container input[type="tel"],
+        .form-container input[type="date"],
+        .form-container input[type="time"],
+        .form-container select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-container input[type="text"]:focus,
+        .form-container input[type="number"]:focus,
+        .form-container input[type="email"]:focus,
+        .form-container input[type="tel"]:focus,
+        .form-container input[type="date"]:focus,
+        .form-container input[type="time"]:focus,
+        .form-container select:focus {
+            border-color: #2e5a50;
+            box-shadow: 0 0 5px rgba(46, 90, 80, 0.3);
+            outline: none;
+        }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; color: #555; }
+        .form-group input[type="checkbox"] { width: auto; margin-right: 10px; accent-color: #2e5a50; }
+        
+        .action-icons { display: flex; gap: 12px; justify-content: flex-start; }
+        .action-icons i { cursor: pointer; color: #555; transition: color 0.2s, transform 0.2s; }
+        .action-icons i:hover { color: #2e5a50; transform: scale(1.1); }
+        .action-icons i.fa-trash:hover { color: #f44336; }
+        .action-icons i.fa-check-circle:hover { color: #4caf50; }
+        .action-icons i.fa-times-circle:hover { color: #f44336; } /* For cancelling bookings */
+        .action-icons i.fa-toggle-on, .action-icons i.fa-toggle-off { font-size: 20px; }
+        .action-icons i.fa-toggle-on { color: #4CAF50; } /* Green for online */
+        .action-icons i.fa-toggle-off { color: #f44336; } /* Red for offline */
+
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .dashboard-grid, .predictive-insights {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-250px);
+                width: 220px;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .content {
+                margin-left: 0;
+                width: 100%;
+                padding: 15px;
+            }
+            .header {
+                padding: 10px 15px;
+            }
+            .header h2 {
+                font-size: 20px;
+            }
+            .dashboard-grid, .predictive-insights {
+                grid-template-columns: 1fr;
+            }
+            .menu-toggle {
+                display: block;
+                margin-right: 15px;
+                background: none;
+                border: none;
+                color: #333;
+                font-size: 24px;
+                cursor: pointer;
+            }
+            .header .user-profile {
+                display: none;
+            }
+        }
+
+        .menu-toggle {
+            display: none;
+        }
+
+        @media (min-width: 769px) {
+            .sidebar {
+                transform: translateX(0);
+            }
+            .content {
+                margin-left: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <a href="#" class="active" onclick="showPage('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="#" onclick="showPage('chargers')"><i class="fas fa-charging-station"></i> Chargers</a>
+        <a href="#" onclick="showPage('bookings')"><i class="fas fa-calendar-check"></i> Bookings</a>
+        <a href="#" onclick="showPage('analytics')"><i class="fas fa-chart-line"></i> Analytics</a>
+        <a href="#" onclick="showPage('promotions')"><i class="fas fa-tags"></i> Promotions</a>
+        <a href="#" onclick="showPage('settings')"><i class="fas fa-cog"></i> Settings</a>
+        <a href="#" onclick="auth.logout()" style="position: absolute; bottom: 20px; width: 90%;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+    <div class="content" id="content">
+        <div class="header">
+            <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+            <h2 id="page-title">Dashboard</h2>
+            <div class="user-profile">
+                <img src="https://via.placeholder.com/40" alt="User Profile">
+                <span>Charger Host</span>
+            </div>
+        </div>
+
+        <div id="dashboard" class="page">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <i class="fas fa-charging-station"></i>
+                    <h3>Total Chargers</h3>
+                    <p id="totalChargers">0</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-globe-americas"></i>
+                    <h3>Chargers Online</h3>
+                    <p id="onlineChargers">0</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-calendar-check"></i>
+                    <h3>Total Bookings</h3>
+                    <p id="totalBookings">0</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-dollar-sign"></i>
+                    <h3>Est. Monthly Revenue</h3>
+                    <p id="estimatedRevenue">$0.00</p>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h3>Charger Usage Overview</h3>
+                <p>Hourly usage trends for your chargers.</p>
+                <canvas id="hourlyUsageChart"></canvas>
+            </div>
+            <div class="table-container">
+                <h3>Recent Bookings</h3>
+                <table id="recentBookingsTable">
+                    <tr><th>ID</th><th>Charger</th><th>Customer</th><th>Date</th><th>Status</th></tr>
+                </table>
+            </div>
+            <div class="table-container">
+                <h3>Charger Status Overview</h3>
+                <table id="chargerStatusTable">
+                    <tr><th>Charger Name</th><th>Location</th><th>Status</th></tr>
+                </table>
+            </div>
+        </div>
+
+        <div id="chargers" class="page" style="display: none;">
+            <div class="header">
+                <h2>Manage Chargers</h2>
+                <button class="add-button" onclick="showAddChargerForm()">Add Charger</button>
+            </div>
+            <div class="table-container">
+                <input type="text" class="search-bar" placeholder="Search chargers by name, location, type..." onkeyup="searchChargers()">
+                <table id="chargersTable">
+                    <tr><th>ID</th><th>Name</th><th>Location</th><th>Type</th><th>Power (kW)</th><th>Price (per kWh)</th><th>Working Hours</th><th>Status</th><th>Actions</th></tr>
+                </table>
+            </div>
+            <div id="addChargerForm" class="form-container" style="display: none;">
+                <h3>Add New Charger</h3>
+                <form id="chargerForm">
+                    <div class="form-group"><label for="chargerName">Charger Name</label><input type="text" id="chargerName" name="name" placeholder="e.g., Downtown Charger A" required></div>
+                    <div class="form-group"><label for="chargerLocation">Location</label><input type="text" id="chargerLocation" name="location" placeholder="e.g., 123 Main St, Anytown" required></div>
+                    <div class="form-group"><label for="chargerType">Type</label>
+                        <select id="chargerType" name="type" required>
+                            <option value="">Select Type</option>
+                            <option value="Type 2">Type 2</option>
+                            <option value="CCS">CCS</option>
+                            <option value="CHAdeMO">CHAdeMO</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label for="chargerPower">Power (kW)</label><input type="number" id="chargerPower" name="power" placeholder="e.g., 22" step="0.1" required min="0"></div>
+                    <div class="form-group"><label for="chargerPrice">Price (per kWh)</label><input type="number" id="chargerPrice" name="price" placeholder="e.g., 0.25" step="0.01" required min="0"></div>
+                    <div class="form-group"><label for="chargerWorkingHoursStart">Working Hours (Start)</label><input type="time" id="chargerWorkingHoursStart" name="workingHoursStart" required></div>
+                    <div class="form-group"><label for="chargerWorkingHoursEnd">Working Hours (End)</label><input type="time" id="chargerWorkingHoursEnd" name="workingHoursEnd" required></div>
+                    <div class="form-group"><label for="chargerStatus">Initial Status</label>
+                        <select id="chargerStatus" name="status" required>
+                            <option value="Online">Online</option>
+                            <option value="Offline">Offline</option>
+                            <option value="Charging">Charging</option>
+                            <option value="Maintenance">Maintenance</option>
+                        </select>
+                    </div>
+                    <button type="submit">Submit</button>
+                    <button type="button" onclick="hideAddChargerForm()" style="background-color: #777; margin-left: 10px;">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="bookings" class="page" style="display: none;">
+            <div class="header">
+                <h2>Manage Bookings</h2>
+                <button class="add-button" onclick="showAddBookingForm()">Add Booking</button>
+            </div>
+            <div class="table-container">
+                <input type="text" class="search-bar" placeholder="Search bookings (customer, charger, date)..." onkeyup="searchBookings()">
+                <div class="tabs">
+                    <button class="tab active" onclick="filterBookings('All')">All</button>
+                    <button class="tab" onclick="filterBookings('Pending')">Pending</button>
+                    <button class="tab" onclick="filterBookings('Completed')">Completed</button>
+                    <button class="tab" onclick="filterBookings('Cancelled')">Cancelled</button>
+                </div>
+                <table id="bookingsTable">
+                    <tr><th>ID</th><th>Charger</th><th>Date</th><th>Time</th><th>Duration</th><th>Customer</th><th>Status</th><th>Actions</th></tr>
+                </table>
+            </div>
+            <div id="addBookingForm" class="form-container" style="display: none;">
+                <h3>Add New Booking</h3>
+                <form id="bookingForm">
+                    <div class="form-group"><label for="bookingCharger">Charger</label>
+                        <select id="bookingCharger" name="charger" required>
+                            </select>
+                    </div>
+                    <div class="form-group"><label for="bookingCustomerName">Customer Name</label><input type="text" id="bookingCustomerName" name="customer" placeholder="Customer Name" required></div>
+                    <div class="form-group"><label for="bookingDate">Date</label><input type="date" id="bookingDate" name="date" required></div>
+                    <div class="form-group"><label for="bookingTime">Time</label><input type="time" id="bookingTime" name="time" required></div>
+                    <div class="form-group"><label for="bookingDuration">Duration</label><input type="text" id="bookingDuration" name="duration" placeholder="e.g., 2 hours" required></div>
+                    <button type="submit">Submit</button>
+                    <button type="button" onclick="hideAddBookingForm()" style="background-color: #777; margin-left: 10px;">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="analytics" class="page" style="display: none;">
+            <div class="header"><h2>Performance Analytics</h2></div>
+            <div class="chart-container"><h3>Monthly Revenue</h3><p>Total revenue generated per month.</p><canvas id="monthlyRevenueChart"></canvas></div>
+            <div class="chart-container"><h3>Charger Usage by Type</h3><p>Distribution of bookings across different charger types.</p><canvas id="chargerTypeUsageChart"></canvas></div>
+            <div class="chart-container"><h3>Peak Usage Hours</h3><p>Average number of sessions per hour across all chargers.</p><canvas id="peakUsageHoursChart"></canvas></div>
+            <div class="predictive-insights">
+                <div class="insight-card"><i class="fas fa-chart-line"></i><h3>Predict Future Demand</h3><p>Analyze booking trends.</p><button onclick="predictDemand()">Generate Forecast</button></div>
+                <div class="insight-card"><i class="fas fa-dollar-sign"></i><h3>Optimize Pricing</h3><p>Suggest optimal pricing.</p><button onclick="optimizePricing()">Optimize</button></div>
+                <div class="insight-card"><i class="fas fa-exclamation-triangle"></i><h3>Identify Underperforming Chargers</h3><p>Find chargers with low usage.</p><button onclick="identifyUnderperformingChargers()">Identify</button></div>
+            </div>
+        </div>
+
+        <div id="promotions" class="page" style="display: none;">
+            <div class="header">
+                <h2>Promotion Management</h2>
+                <button class="add-button" onclick="showAddPromotionForm()">Add New Promotion</button>
+            </div>
+            <div class="table-container">
+                <table id="promotionsTable">
+                    <tr><th>ID</th><th>Code</th><th>Description</th><th>Type</th><th>Value</th><th>Expiry Date</th><th>Usage Limit</th><th>Actions</th></tr>
+                </table>
+            </div>
+            <div id="addPromotionForm" class="form-container" style="display: none;">
+                <h3>Add/Edit Promotion</h3>
+                <form id="promotionForm">
+                    <div class="form-group"><label for="promoCode">Promotion Code</label><input type="text" id="promoCode" name="code" placeholder="e.g., SUMMER20" required></div>
+                    <div class="form-group"><label for="promoDescription">Description</label><input type="text" id="promoDescription" name="description" placeholder="e.g., 20% off all charges" required></div>
+                    <div class="form-group"><label for="promoType">Type</label>
+                        <select id="promoType" name="type" required>
+                            <option value="">Select Type</option>
+                            <option value="percentage">Percentage Off (%)</option>
+                            <option value="fixed">Fixed Amount Off ($)</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label for="promoValue">Value</label><input type="number" id="promoValue" name="value" step="0.01" placeholder="e.g., 20 (for %); 5 (for $)" required min="0"></div>
+                    <div class="form-group"><label for="promoExpiryDate">Expiry Date</label><input type="date" id="promoExpiryDate" name="expiryDate"></div>
+                    <div class="form-group"><label for="promoUsageLimit">Usage Limit (Optional)</label><input type="number" id="promoUsageLimit" name="usageLimit" placeholder="e.g., 100" min="0"></div>
+                    <button type="submit">Save Promotion</button>
+                    <button type="button" onclick="hideAddPromotionForm()" style="background-color: #777; margin-left: 10px;">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="settings" class="page" style="display: none;">
+            <div class="header"><h2>Host Panel Settings</h2></div>
+            <div class="table-container form-container">
+                <h3>Host Information</h3>
+                <div class="form-group"><label for="hostName">Host Name</label><input type="text" id="hostName" value="EV Charger Host Inc."></div>
+                <div class="form-group"><label for="hostEmail">Contact Email</label><input type="email" id="hostEmail" value="host@evchargers.com"></div>
+                <div class="form-group"><label for="hostPhone">Contact Phone</label><input type="tel" id="hostPhone" value="+1 (555) 123-4567"></div>
+
+                <h3 style="margin-top: 30px;">Default Charger Settings</h3>
+                <div class="form-group"><label for="defaultPrice">Default Price (per kWh)</label><input type="number" id="defaultPrice" step="0.01" value="0.25" min="0"></div>
+                <div class="form-group"><label for="defaultPower">Default Power (kW)</label><input type="number" id="defaultPower" step="0.1" value="50" min="0"></div>
+                
+                <h3 style="margin-top: 30px;">Notification Preferences</h3>
+                <div class="form-group">
+                    <input type="checkbox" id="emailNotifications" checked><label for="emailNotifications">Enable Email Notifications</label>
+                </div>
+                <div class="form-group">
+                    <input type="checkbox" id="smsNotifications"><label for="smsNotifications">Enable SMS Notifications</label>
+                </div>
+                
+                <button onclick="saveSettings()">Save Changes</button>
+                <button onclick="resetSettings()" style="background-color: #f44336; margin-left: 10px;">Reset to Defaults</button>
+            </div>
+        </div>
+
+        <div class="notification" id="notification">Action completed!</div>
+    </div>
+
+    <script src="charger_host.js"></script>
+</body>
+</html>

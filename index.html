@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenPoint | Decentralized EV Charging Network</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+    <header id="main-header">
+        <div class="header-container container">
+                <div class="logo-text">
+                    <h1><a href="index.html">GreenPoint</a></h1>
+                </div>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#maintenance">Maintenance</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons" id="authButtons">
+                <button class="button secondary small" onclick="showLoginModal()">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <button class="button primary small" onclick="showRegisterModal()">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </button>
+            </div>
+            <div class="user-menu" id="userMenu">
+                <div class="user-dropdown">
+                    <i class="fas fa-user-circle user-avatar"></i>
+                    <span class="user-name">John Doe</span>
+                    <div class="dropdown-content">
+                        <a href="#"><i class="fas fa-user"></i> My Profile</a>
+                        <a href="#"><i class="fas fa-car"></i> My EV</a>
+                        <a href="#"><i class="fas fa-history"></i> Charging History</a>
+                        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                        <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="bottom-bar">
+        <a href="#home" class="active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#find-charger">
+            <i class="fas fa-charging-station"></i>
+            <span>Find Charger</span>
+        </a>
+        <a href="#become-host">
+            <i class="fas fa-handshake"></i>
+            <span>Host</span>
+        </a>
+        <a href="#maintenance">
+            <i class="fas fa-tools"></i>
+            <span>Maintenance</span>
+        </a>
+        <a href="#profile">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </div>
+
+    <section class="hero-section" id="home">
+        <div class="hero-pattern"></div>
+        <div class="cybertruck-animation">
+            <img src="https://i.ibb.co/C3d2bN7m/Untitled-design-Photoroom.png" alt="Tesla Cybertruck" class="cybertruck-img" />
+        </div>
+        <div class="hero-content container">
+            <h2 class="animate">The Heart of Green Mobility</h2>
+            <p class="animate delay-1">
+                Join our decentralized network of EV charging stations and help create a sustainable future while earning passive income.
+            </p>
+            <div class="cta-buttons animate delay-2">
+                <a href="#find-charger" class="button primary">
+                    <i class="fas fa-charging-station"></i> Find Charger
+                </a>
+                <a href="#become-host" class="button secondary">
+                    <i class="fas fa-home"></i> Become Host
+                </a>
+            </div>
+        </div>
+        <div class="hero-stats container">
+            <div class="hero-stats-container animate delay-3">
+                <div class="hero-stat-card">
+                    <div class="hero-stat-number">15</div>
+                    <p>Active Hosts</p>
+                </div>
+                <div class="hero-stat-card">
+                    <div class="hero-stat-number">6</div>
+                    <p>Service Centers</p>
+                </div>
+                <div class="hero-stat-card">
+                    <div class="hero-stat-number">100K+</div>
+                    <p>Host Earnings</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="find-charger" id="find-charger">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="animate">Find a Charging Station</h2>
+                <p class="animate delay-1">Locate available charging stations near your location</p>
+            </div>
+            
+            <div class="map-container animate delay-2">
+                <div id="map"></div>
+                <div class="map-controls">
+                    <div class="map-search">
+                        <input type="text" id="mapSearch" placeholder="Search locations...">
+                        <button id="useLocationBtn"><i class="fas fa-location-arrow"></i></button>
+                    </div>
+                    <button class="map-filter-btn" id="filterToggleBtn">
+                        <i class="fas fa-filter"></i>
+                    </button>
+                </div>
+                
+                <div class="map-filters" id="mapFilters">
+                    <div class="filter-header">
+                        <h3><i class="fas fa-filter"></i> Filter Chargers</h3>
+                        <button class="close-filters" id="closeFiltersBtn" title="Close filters (ESC)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="filter-content">
+                        <div class="filter-group">
+                            <h4><i class="fas fa-bolt"></i> Charger Type</h4>
+                            <div class="filter-options">
+                                <label class="filter-option">
+                                    <input type="checkbox" name="type" value="level1">
+                                    <span class="checkmark"></span>
+                                    <span class="option-text">Level 1</span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" name="type" value="level2">
+                                    <span class="checkmark"></span>
+                                    <span class="option-text">Level 2</span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" name="type" value="dc-fast">
+                                    <span class="checkmark"></span>
+                                    <span class="option-text">DC Fast</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <h4><i class="fas fa-plug"></i> Connector</h4>
+                            <div class="filter-options">
+                                <label class="filter-option">
+                                    <input type="checkbox" name="connector" value="j1772">
+                                    <span class="checkmark"></span>
+                                    <span class="option-text">J1772</span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" name="connector" value="ccs">
+                                    <span class="checkmark"></span>
+                                    <span class="option-text">CCS</span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" name="connector" value="chademo">
+                                    <span class="checkmark"></span>
+                                    <span class="option-text">CHAdeMO</span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" name="connector" value="tesla">
+                                    <span class="checkmark"></span>
+                                    <span class="option-text">Tesla</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <h4><i class="fas fa-clock"></i> Availability</h4>
+                            <div class="filter-options">
+                                <label class="filter-option">
+                                    <input type="checkbox" name="availability" value="available">
+                                    <span class="checkmark"></span>
+                                    <span class="option-text">Available Now</span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="checkbox" name="availability" value="free">
+                                    <span class="checkmark"></span>
+                                    <span class="option-text">Free Charging</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-actions">
+                            <button class="clear-filters-btn" id="clearFiltersBtn">
+                                <i class="fas fa-undo"></i> Clear All
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="map-results">
+                    <span id="resultsCount">0</span> chargers found
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="maintenance-section" id="maintenance">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-header-content">
+                    <h2>EV Services By Our Green Partners</h2>
+                    <p>Professional maintenance services for your electric vehicle</p>
+                </div>
+                <button class="see-all-button" onclick="window.location.href='all-services.html'">
+                    <span>See All</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            <div class="services-carousel">
+                <div class="service-card">
+                    <a href="service.html">
+                        <img src="https://i.ibb.co/QjJNbFrZ/kluch.png" alt="Software Update">
+                        <h3>Service 1</h3>
+                    </a>
+                </div>
+                <div class="service-card">
+                    <a href="service.html">
+                        <img src="https://i.ibb.co/QjJNbFrZ/kluch.png" alt="Tire Rotation & Alignment">
+                        <h3>Service 2</h3>
+                    </a>
+                </div>
+                <div class="service-card">
+                    <a href="service.html">
+                        <img src="https://i.ibb.co/QjJNbFrZ/kluch.png" alt="Annual Maintenance Package">
+                        <h3>Service 3</h3>
+                    </a>
+                </div>
+                <div class="service-card">
+                    <a href="service.html">
+                        <img src="https://i.ibb.co/QjJNbFrZ/kluch.png" alt="Charging Port Inspection">
+                        <h3>Service 4</h3>
+                    </a>
+                </div>
+                <div class="service-card">
+                    <a href="service.html">
+                        <img src="https://i.ibb.co/QjJNbFrZ/kluch.png" alt="Software Update">
+                        <h3>Service 5</h3>
+                    </a>
+                </div>
+                <div class="service-card">
+                    <a href="service.html">
+                        <img src="https://i.ibb.co/QjJNbFrZ/kluch.png" alt="Annual Maintenance Package">
+                        <h3>Service 6</h3>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="become-host" id="become-host">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="animate">Become a Charging Host</h2>
+                <p class="animate delay-1">Join our network and start earning from your charging station</p>
+            </div>
+            <form class="host-form animate delay-2">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="host-name">Your Name</label>
+                        <input type="text" id="host-name" class="form-control" placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="host-email">Email Address</label>
+                        <input type="email" id="host-email" class="form-control" placeholder="Enter your email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="charger-location">Charger Location</label>
+                    <input type="text" id="charger-location" class="form-control" placeholder="Enter charger address">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="host-charger-type">Charger Type</label>
+                        <select id="host-charger-type" class="form-control">
+                            <option value="">Select charger type</option>
+                            <option value="level1">Level 1 (120V)</option>
+                            <option value="level2">Level 2 (240V)</option>
+                            <option value="dc-fast">DC Fast Charger</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="host-connector-type">Connector Type</label>
+                        <select id="host-connector-type" class="form-control">
+                            <option value="">Select connector</option>
+                            <option value="j1772">J1772</option>
+                            <option value="ccs">CCS</option>
+                            <option value="chademo">CHAdeMO</option>
+                            <option value="tesla">Tesla</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="kw-rate">KW Rate (GEL)</label>
+                        <input type="number" id="kw-rate" class="form-control" placeholder="Enter rate per kWh">
+                    </div>
+                    <div class="form-group">
+                        <label for="host-availability">Availability</label>
+                        <select id="host-availability" class="form-control">
+                            <option value="">Select availability</option>
+                            <option value="24-7">24/7</option>
+                            <option value="business-hours">Business Hours</option>
+                            <option value="evenings-weekends">Evenings/Weekends</option>
+                            <option value="custom">Custom Schedule</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="host-description">Description (Optional)</label>
+                    <textarea id="host-description" class="form-control" rows="3" placeholder="Describe your charger or any special instructions"></textarea>
+                </div>
+                <button type="submit" class="button primary">
+                    <i class="fas fa-upload"></i> Submit Application
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <section class="features-section" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="animate">Why Choose GreenPoint</h2>
+                <p class="animate delay-1">Our platform offers unique benefits for both EV owners and charger hosts</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card animate delay-1">
+                    <i class="fas fa-plug feature-icon"></i>
+                    <h3>Seamless Charging</h3>
+                    <p>Find available charging stations near you with real-time availability and pricing information.</p>
+                </div>
+                <div class="feature-card animate delay-2">
+                    <i class="fas fa-money-bill-wave feature-icon"></i>
+                    <h3>Earn Income</h3>
+                    <p>Monetize your home charging station by sharing it with EV owners in your community.</p>
+                </div>
+                <div class="feature-card animate delay-3">
+                    <i class="fas fa-leaf feature-icon"></i>
+                    <h3>Sustainable Future</h3>
+                    <p>Contribute to reducing carbon emissions by supporting the EV revolution.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-section" id="about">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="animate">Our Goal</h2>
+            </div>
+            <div class="about-content">
+                <div class="about-text animate delay-1">
+                    <p>GreenPoint was founded in 2024 with a simple goal: to make electric vehicle charging accessible to everyone while creating economic opportunities for charger hosts.</p>
+                    <p>We believe that the transition to electric vehicles shouldn't be limited by charging infrastructure. By leveraging existing private charging stations, we're building the world's largest decentralized EV charging network.</p>
+                    <p>Our platform connects EV owners with hosts who have charging stations, creating a win-win situation for both parties and accelerating the adoption of sustainable transportation.</p>
+                </div>
+                <div class="about-image animate delay-2">
+                    <img src="https://i.pinimg.com/736x/07/d6/a3/07d6a34758147a0214e092e5e08429a1.jpg" alt="EV Charging Station">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="animate">Get In Touch</h2>
+                <p class="animate delay-1">Have questions? We're here to help</p>
+            </div>
+            <div class="contact-container">
+                <div class="contact-info animate delay-1">
+                    <div class="contact-method">
+                        <i class="fas fa-envelope contact-icon"></i>
+                        <div>
+                            <h4>Email Us</h4>
+                            <p>support@greenpoint.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-method">
+                        <i class="fas fa-phone contact-icon"></i>
+                        <div>
+                            <h4>Call Us</h4>
+                            <p>+995 598 50 80 01</p>
+                        </div>
+                    </div>
+                    <div class="contact-method">
+                        <i class="fas fa-map-marker-alt contact-icon"></i>
+                        <div>
+                            <h4>Location</h4>
+                            <p>Tbilisi, Georgia</p>
+                        </div>
+                    </div>
+                </div>
+                <form class="contact-form animate delay-2">
+                    <div class="form-group">
+                        <label for="contact-name">Name</label>
+                        <input type="text" id="contact-name" class="form-control" placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-email">Email</label>
+                        <input type="email" id="contact-email" class="form-control" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-subject">Subject</label>
+                        <input type="text" id="contact-subject" class="form-control" placeholder="Enter subject">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-message">Message</label>
+                        <textarea id="contact-message" class="form-control" rows="4" placeholder="Enter your message"></textarea>
+                    </div>
+                    <button type="submit" class="button primary">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-container container">
+            <div class="footer-links">
+                <div class="logo">
+                    <div class="logo-text">
+                        <h1><a href="index.html">GreenPoint</a></h1>
+                    </div>
+                </div>
+                <p>Making EV charging accessible and sustainable through community sharing.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#find-charger">Find Charger</a></li>
+                    <li><a href="#become-host">Become Host</a></li>
+                    <li><a href="#about">About Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">Safety Guidelines</a></li>
+                    <li><a href="#">Support Center</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Host Agreement</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright container">
+            <p>© 2025 GreenPoint Technologies. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div class="modal" id="bookingModal">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeModal('bookingModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="modal-title" id="serviceModalTitle">Book Service</h3>
+            <div class="booked-times" id="bookedTimesContainer" style="display: none;">
+                <h4>Already Booked Times</h4>
+                <ul id="bookedTimesList"></ul>
+            </div>
+            <form class="modal-form" id="bookingForm">
+                <input type="hidden" id="bookingService">
+                <div class="form-group">
+                    <label for="bookingDate">Date</label>
+                    <input type="date" id="bookingDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookingTime">Time</label>
+                    <select id="bookingTime" class="form-control" required>
+                        <option value="">Select time</option>
+                    </select>
+                </div>
+                <button type="submit" class="button primary">
+                    <i class="fas fa-check"></i> Confirm Booking
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="energyRequestModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('energyRequestModal')">&times;</span>
+            <h3 class="modal-title">Request Energy from Another EV</h3>
+            <form class="modal-form" id="energyRequestForm">
+                <div class="form-group">
+                    <label for="energyAmount">Energy Needed (kWh)</label>
+                    <input type="number" id="energyAmount" class="form-control" placeholder="Enter amount in kWh" required>
+                </div>
+                <div class="form-group">
+                    <label for="currentRange">Your Current Range (km)</label>
+                    <input type="number" id="currentRange" class="form-control" placeholder="Enter current range" required>
+                </div>
+                <div class="form-group">
+                    <label for="targetRange">Target Range Needed (km)</label>
+                    <input type="number" id="targetRange" class="form-control" placeholder="Enter target range" required>
+                </div>
+                <div class="form-group">
+                    <label for="energyLocation">Your Location</label>
+                    <input type="text" id="energyLocation" class="form-control" placeholder="Enter your location" required>
+                </div>
+                <div class="form-group">
+                    <label for="energyUrgency">Urgency</label>
+                    <select id="energyUrgency" class="form-control" required>
+                        <option value="low">Low (Can wait 1+ hours)</option>
+                        <option value="medium">Medium (Need within 30-60 min)</option>
+                        <option value="high">High (Emergency, need now)</option>
+                    </select>
+                </div>
+                
+                <div class="payment-section">
+                    <h4>Payment Method</h4>
+                    <div class="card-selection">
+                        <div class="card-option">
+                            <input type="radio" id="energyCard1" name="energyPaymentCard" value="card1" required>
+                            <label for="energyCard1" class="card-label">
+                                <i class="fas fa-credit-card"></i>
+                                <span>Card 1</span>
+                            </label>
+                        </div>
+                        <div class="card-option">
+                            <input type="radio" id="energyCard2" name="energyPaymentCard" value="card2">
+                            <label for="energyCard2" class="card-label">
+                                <i class="fas fa-credit-card"></i>
+                                <span>Card 2</span>
+                            </label>
+                        </div>
+                        <div class="card-option">
+                            <input type="radio" id="energyCard3" name="energyPaymentCard" value="card3">
+                            <label for="energyCard3" class="card-label">
+                                <i class="fas fa-credit-card"></i>
+                                <span>Card 3</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="button primary">
+                    <i class="fas fa-search"></i> Find Energy Donors
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="energyProviderModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('energyProviderModal')">&times;</span>
+            <h3 class="modal-title">Share Your EV's Energy</h3>
+            <form class="modal-form" id="energyProviderForm">
+                <div class="form-group">
+                    <label for="availableEnergy">Available Energy to Share (kWh)</label>
+                    <input type="number" id="availableEnergy" class="form-control" placeholder="Enter amount in kWh" required>
+                </div>
+                <div class="form-group">
+                    <label for="shareLocation">Your Current Location</label>
+                    <input type="text" id="shareLocation" class="form-control" placeholder="Enter your location" required>
+                </div>
+                <div class="form-group">
+                    <label for="shareDuration">Available Duration</label>
+                    <select id="shareDuration" class="form-control" required>
+                        <option value="30">30 minutes</option>
+                        <option value="60">1 hour</option>
+                        <option value="120">2 hours</option>
+                        <option value="240">4 hours</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="energyRate">Rate per kWh (GEL)</label>
+                    <input type="number" id="energyRate" class="form-control" placeholder="Enter rate per kWh" required>
+                </div>
+                <div class="form-group">
+                    <label for="connectorType">Connector Type</label>
+                    <select id="connectorType" class="form-control" required>
+                        <option value="ccs">CCS</option>
+                        <option value="chademo">CHAdeMO</option>
+                        <option value="tesla">Tesla</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <button type="submit" class="button primary">
+                    <i class="fas fa-share-alt"></i> Start Sharing Energy
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('loginModal')">&times;</span>
+            <h3 class="modal-title">Login to Your Account</h3>
+            <form class="modal-form" id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" required>
+                </div>
+                <div class="form-group">
+                    <label style="display: inline-flex; align-items: center; gap: 5px;">
+                        <input type="checkbox" id="rememberMe"> Remember me
+                    </label>
+                    <a href="#" onclick="showForgotPasswordModal()" style="float: right;">Forgot password?</a>
+                </div>
+                <button type="submit" class="button primary">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <p style="text-align: center; margin-top: 10px;">
+                    Don't have an account? <a href="#" onclick="showRegisterModal()">Register</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('registerModal')">&times;</span>
+            <h3 class="modal-title">Create Your Account</h3>
+            <form class="modal-form" id="registerForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="regFirstName">First Name</label>
+                        <input type="text" id="regFirstName" class="form-control" placeholder="Enter first name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regLastName">Last Name</label>
+                        <input type="text" id="regLastName" class="form-control" placeholder="Enter last name" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email</label>
+                    <input type="email" id="regEmail" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPhone">Phone Number</label>
+                    <input type="tel" id="regPhone" class="form-control" placeholder="Enter your phone number" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Password</label>
+                    <input type="password" id="regPassword" class="form-control" placeholder="Enter your password" required>
+                </div>
+                <div class="form-group">
+                    <label for="regConfirmPassword">Confirm Password</label>
+                    <input type="password" id="regConfirmPassword" class="form-control" placeholder="Confirm your password" required>
+                </div>
+                <h4>Your EV Information</h4>
+                <div class="form-group">
+                    <label for="regEvModel">EV Model</label>
+                    <select id="regEvModel" class="form-control" required>
+                        <option value="">Select your EV model</option>
+                        <option value="tesla-model-3">Tesla Model 3</option>
+                        <option value="tesla-model-s">Tesla Model S</option>
+                        <option value="tesla-model-x">Tesla Model X</option>
+                        <option value="tesla-model-y">Tesla Model Y</option>
+                        <option value="audi-etron">Audi e-tron</option>
+                        <option value="bmw-i4">BMW i4</option>
+                        <option value="bmw-ix">BMW iX</option>
+                        <option value="ford-mustang-mach-e">Ford Mustang Mach-E</option>
+                        <option value="hyundai-ioniq-5">Hyundai Ioniq 5</option>
+                        <option value="kia-ev6">Kia EV6</option>
+                        <option value="volkswagen-id4">Volkswagen ID.4</option>
+                        <option value="rivian-r1t">Rivian R1T</option>
+                        <option value="rivian-r1s">Rivian R1S</option>
+                        <option value="lucid-air">Lucid Air</option>
+                        <option value="nissan-leaf">Nissan Leaf</option>
+                        <option value="chevrolet-bolt">Chevrolet Bolt</option>
+                        <option value="other">Other EV Model</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="regVin">VIN Code</label>
+                        <input type="text" id="regVin" class="form-control" placeholder="Enter VIN code" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPlate">Number Plate</label>
+                        <input type="text" id="regPlate" class="form-control" placeholder="Enter number plate" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label style="display: inline-flex; align-items: center; gap: 5px;">
+                        <input type="checkbox" required> I agree to the Terms of Service and Privacy Policy
+                    </label>
+                </div>
+                <button type="submit" class="button primary">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+                <p style="text-align: center; margin-top: 10px;">
+                    Already have an account? <a href="#" onclick="showLoginModal()">Login</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="forgotPasswordModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('forgotPasswordModal')">&times;</span>
+            <h3 class="modal-title">Reset Your Password</h3>
+            <form class="modal-form" id="forgotPasswordForm">
+                <div class="form-group">
+                    <label for="resetEmail">Email Address</label>
+                    <input type="email" id="resetEmail" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <button type="submit" class="button primary">
+                    <i class="fas fa-key"></i> Send Reset Link
+                </button>
+                <p style="text-align: center; margin-top: 10px;">
+                    Remember your password? <a href="#" onclick="showLoginModal()">Login</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="chargerBookingModal">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeModal('chargerBookingModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="modal-title" id="chargerModalTitle">Book Charger</h3>
+            <div class="booked-times" id="chargerBookedTimesContainer" style="display: none;">
+                <h4>Already Booked Times</h4>
+                <ul id="chargerBookedTimesList"></ul>
+            </div>
+            <form class="modal-form" id="chargerBookingForm">
+                <input type="hidden" id="chargerName">
+                <div class="form-group">
+                    <label for="chargerBookingDate">Date</label>
+                    <input type="date" id="chargerBookingDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="chargerBookingTime">Time</label>
+                    <select id="chargerBookingTime" class="form-control" required>
+                        <option value="">Select time</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="chargerBookingDuration">Duration (hours)</label>
+                    <input type="number" id="chargerBookingDuration" class="form-control" placeholder="Enter duration" min="1" max="24" required>
+                </div>
+                
+                <div class="payment-section">
+                    <h4>Payment Method</h4>
+                    <div class="card-selection">
+                        <div class="card-option">
+                            <input type="radio" id="card1" name="paymentCard" value="card1" required>
+                            <label for="card1" class="card-label">
+                                <i class="fas fa-credit-card"></i>
+                                <span>Card 1</span>
+                            </label>
+                        </div>
+                        <div class="card-option">
+                            <input type="radio" id="card2" name="paymentCard" value="card2">
+                            <label for="card2" class="card-label">
+                                <i class="fas fa-credit-card"></i>
+                                <span>Card 2</span>
+                            </label>
+                        </div>
+                        <div class="card-option">
+                            <input type="radio" id="card3" name="paymentCard" value="card3">
+                            <label for="card3" class="card-label">
+                                <i class="fas fa-credit-card"></i>
+                                <span>Card 3</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="button primary">
+                    <i class="fas fa-check"></i> Confirm Charger Booking
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="messageBox" class="modal">
+        <div class="modal-content message-box-content">
+            <div class="message-box-header">
+                <i id="messageBoxIcon" class="fas fa-info-circle"></i>
+                <span id="messageBoxText">Message</span>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #messageBox .modal-content {
+            max-width: 350px;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        #messageBox .message-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        #messageBox.success .message-icon {
+            color: var(--accent);
+        }
+        #messageBox.error .message-icon {
+            color: #e74c3c;
+        }
+        #messageBox.success .modal-content {
+            border: 2px solid var(--accent);
+        }
+        #messageBox.error .modal-content {
+            border: 2px solid #e74c3c;
+        }
+        #messageBox .close-modal {
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+        }
+    </style>
+
+    <script src="auth.js"></script>
+    <script src="booking.js"></script>
+    <script src="energy.js"></script>
+    <script src="map.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
